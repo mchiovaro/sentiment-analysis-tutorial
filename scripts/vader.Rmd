@@ -104,6 +104,19 @@ evol_data <- as.data.frame(c("I am scared of the dark, there are monsters under 
 # run vader on the data
 vader_child_data <- vader_df(evol_data)
 
+
+# Plots in base R
+plot(vader_child_data$compound, type = "l",  xlab = "Time", ylab = "Compound Sentiment")
+plot(vader_child_data$pos, type = "l",  xlab = "Time", ylab = "Positive Sentiment")
+plot(vader_child_data$neu, type = "l",  xlab = "Time", ylab = "Neutral Sentiment")
+plot(vader_child_data$neg, type = "l",  xlab = "Time", ylab = "Negative Sentiment")
+
+```
+
+This can also be done in ggplot but the ggplot lesson is later in the semester, so I will not go over the code but I have left it here for those that are familiar!
+
+```{r ggplot-sentiment}
+
 # plot the time series of the compound, pos, neu, and neg values
 ggplot() +
   
