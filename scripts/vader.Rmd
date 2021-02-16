@@ -18,6 +18,9 @@ In order to use the 'vader' package for R, we first need to install and load it.
 # turn on caching: This saves the results from a chunk so that when you knit, it does not re-run the code chunk permitting all lines of code have remained the same. This saves on computation time!
 knitr::opts_chunk$set(cache=TRUE, autodep=TRUE, cache.lazy=FALSE)
 
+# clear the workspace
+rm(list=ls())
+
 # install packages
 install.packages("vader")
 install.packages("ggplot2")
