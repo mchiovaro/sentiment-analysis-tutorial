@@ -1,0 +1,132 @@
+---
+title: "Using the 'vader' R package for sentiment analysis"
+author: "Megan Chiovaro, University of Connecticut, Department of Psychological Sciences, Center for the Ecological Study of Perception and Action"
+date: "2/16/2021"
+output: html_document
+---
+
+### "vader" Package for R
+
+The 'vader' package for R is used to quantify a compound valence score, and the weighted percentages of positive, negative, and neutral words of a text. First used as a Python tool (https://github.com/cjhutto/vaderSentiment), the methods of vader have since been made into an R package with two primary functions: 'get_vader' and 'vader_df'. Today we will practice using both!
+
+## Set up
+
+In order to use the 'vader' package for R, we first need to install and load it.
+
+```{r setup, include=FALSE}
+
+# turn on caching: This saves the results from a chunk so that when you knit, it does not re-run the code chunk permitting all lines of code have remained the same. This saves on computation time!
+knitr::opts_chunk$set(cache=TRUE, autodep=TRUE, cache.lazy=FALSE)
+
+# install packages
+install.packages("vader")
+install.packages("ggplot2")
+
+# load packages
+library(vader)
+library(ggplot2)
+
+```
+
+## Read in data
+
+To practice using 'vader,' let's create some fake data!
+
+```{r data}
+
+# create fake data to practice
+data <- as.data.frame(c("I love the outdoors, it's beautiful.", 
+                        "Today is a sad day.", 
+                        "Pluto is no longer a planet."))
+
+```
+
+## Use the 'get_vader' function 
+
+Using the 'get_vader' function will produce a compound valence score, and the weighted percentages of positive, negative, and neutral words in a single text.
+
+```{r get_vader_word}
+
+# try just printing the results for a single word so we can see the output
+get_vader("hi")
+
+# we can also save the results to an object for saving
+hi_sentiment <- as.data.frame(get_vader("hi"))
+
+```
+
+We can see that the function produces 6 output metrics: word_scores, compund, pos, neu, neg, and but_count.
+
+word_scores: a list of the individual word values in the text
+compound: the overall valence score of the text
+pos: the weighted average of positive words in the text
+neu: the weighted average of neutral words in the text
+neg: the weighted average of negative words in the text
+but_count: the number of time "but" shows up in the text
+
+```{r get_vader_sentence}
+
+# run vader on the first sentence in our dataframe
+get_vader("happy, good, terrible, sad")
+
+```
+
+Now we can see the list of scores for each word in the "sentence." There are four words, and the word_scores list has four values. 
+
+The 'get_vader' function is quick to use on a single text, but what about when we have multiple pieces of text that we want to analyze?
+
+## Use the 'vader_df' function 
+
+This is where 'vader_df' comes in! This function allows you to run the sentiment analysis over a vector or within a column. Here, we will run it over out "data" that we made earlier.
+
+```{r vader_df}
+
+# run vader on the dataframe, hold results in a new dataframe, and view results
+(vader_data_mult <- vader_df(data))
+
+```
+
+This produced a dataframe where each line holds the output metrics for each line of text that was in the original dataframe.
+
+## Analyzing shifts in sentiment over time
+
+Let's pretend we are talking to a little kid who has a fear of the dark, and their physician records the child's feelings about the dark at every visit.
+
+```{r time-evol-sentiment}
+
+# create some text data
+evol_data <- as.data.frame(c("I am scared of the dark, there are monsters under the bed that are very bad. I hate them. They make me feel in danger.", 
+                        "I do not like the dark, but it is less scary now.", 
+                        "The dark is okay. I close my eyes and it is okay.",
+                        "I like the dark. I can look at the stars outside.",
+                        "I love the dark! It is fun and great to tell mystery stories!")) 
+
+# run vader on the data
+vader_child_data <- vader_df(evol_data)
+
+# plot the time series of the compound, pos, neu, and neg values
+ggplot() +
+  
+  # add compound sentiment
+  geom_line(data = vader_child_data, aes(x = c(1:5), y = compound, color = "compound")) +
+  
+  # add positive sentiment
+  geom_line(data = vader_child_data, aes(x = c(1:5), y = pos, color = "positive")) +
+  
+  # add neutral sentiment
+  geom_line(data = vader_child_data, aes(x = c(1:5), y = neu, color = "neutral")) +
+  
+  # add negative sentiment
+  geom_line(data = vader_child_data, aes(x = c(1:5), y = neg, color = "negative")) +
+  
+  # label axes
+  xlab("Time") +
+  ylab("Sentiment score")
+
+```
+
+We can see that as time goes on, the child generally increases the postivity of their statements and reduces their use of negative feelings toward the darkness!
+
+## For good measure
+
+"Luke, I am your sentiment analysis tool for R" - vader
